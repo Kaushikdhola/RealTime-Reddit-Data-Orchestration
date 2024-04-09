@@ -64,7 +64,6 @@ This project demonstrates a real-time data pipeline for extracting data from Red
 
    ```bash
    git clone https://github.com/Kaushikdhola/RealTime-Reddit-Data-Orchestration.git
-   cd your-repo
 
 2. Install required Python packages:
 
@@ -83,7 +82,6 @@ This project demonstrates a real-time data pipeline for extracting data from Red
  - EC2
  - EventBridge
  - Glue (Crawler, Workflow, ETL Job)
- - Kafka (CloudKarafka)
  - Amazon S3
  - API Gateway
 
