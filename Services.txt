@@ -1,0 +1,27 @@
+Real-time Reddit Data Orchestration and Trend Analysis Engine
+
+Services Used:
+
+1. AWS Lambda
+   - Used for serverless computing, particularly for executing the Reddit data processing logic.
+
+2. Amazon EC2
+   - Used for hosting the Flask web application that interacts with the API Gateway for user interface for explicit user requirements.
+
+3. Amazon EventBridge (formerly CloudWatch Events)
+   - Used for scheduling the Lambda function execution at a specific interval (every 10 minutes).
+
+4. AWS Glue
+   - Used for data integration, including:
+     - AWS Glue Crawler: Discovers and categorizes data from the S3 bucket.
+     - AWS Glue Workflow: Defines the workflow for the ETL (Extract, Transform, Load) process.
+     - AWS Glue ETL Job: Performs the ETL process, transforming CSV data to Parquet format.
+
+5. Apache Kafka - Cloudkarakfa
+   - Used for real-time streaming of Reddit data, specifically for publishing and consuming messages.
+
+6. Amazon S3
+   - Used for storing raw Reddit data, Parquet files and trend analysis output files.
+
+7. AWS API Gateway
+   - Used for creating an API endpoint (REST API) to trigger the Lambda function.

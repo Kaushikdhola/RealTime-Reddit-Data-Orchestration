@@ -1,0 +1,339 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Real-time Reddit Data Orchestration and Trend Analysis Engine
+
+Parameters:
+  LambdaLayerS3Bucket:
+    Type: String
+    Default: redditlambdalayers
+    Description: S3 bucket name for Lambda layers
+  KeyNameParameter:
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: termproject
+    Description: termproject
+
+Resources:
+
+  RedditToKafkaLambda1:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: RedditToKafkaLambda1
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.11
+      Timeout: 900
+      Code:
+        S3Bucket: !Ref LambdaLayerS3Bucket
+        S3Key: 'producer.zip'
+      Role: "arn:aws:iam::590183658701:role/LabRole"
+      Environment:
+          Variables:
+            BOOTSTRAP_SERVERS: "dory.srvs.cloudkafka.com:9094"
+            CLOUDKARAFKA_PASSWORD: "GN_A9Wb3NZG5vDmYIHaZbrtEobzqcE8U"
+            CLOUDKARAFKA_USERNAME: "cldsupij"
+            KAFKA_TOPIC: "cldsupij-REDDIT_ETL_TOPIC"
+            REDDIT_CLIENT_ID: "9Y8x384xPzcaFWzDS0SJjA"
+            REDDIT_CLIENT_SECRET: "IZ0NK6r8E7-87GGgYR50jZSEfPFApA"
+            SUBREDDITS: "technology,datascience,dataengineering,softwareengineering,innovation,computerscience,programming,webdev,sysadmin,learnprogramming,cybersecurity,artificial,DevOps,BigData,opensource,gamedev,hacking,technews,networking,linux,Python,Java,javascript,reactjs,angularjs,node,learnpython,learnjavascript,learnjava,php,cpp,rust,machinelearning,dataisbeautiful,datasciencejobs,ArtificialInteligence,robotics,aws,docker,kubernetes,coding,programminghumor,technologynews,frontend,backend,softwaretesting,learnprogrammingjobs,programmingchallenges,androiddev,iOSProgramming,learnmachinelearning,web_design,crypto,cloudcomputing,azure,dataviz,gameprogramming,CompTIA,devopsish,CS50,sql,programmingtools,APIs,productmanagement,devops,UI_programming,devopsengineers,blockchain,fullstack,webhosting,SEO,webdevtutorials,data,algorithms,learnruby,learnr,rust_programming,devopsjobs,webdevbuddies,web_designer,learnvue,javascriptframeworks,techsupport,angular,vuejs,laravel,dotnet,machinelearningalgorithms,MLQuestions,softwaredevelopment,devops_salaries,opensourcecoding,opensourceprojects,productdesign,devopsjobs,wordpress,webdevsupport,webdevelopers,devopschat,codingbootcamp,programmerreactions,codeprojects,backenddev,dataprivacy,datavisualization,learnsql,programmingmemes,ruby,pythoncoding,csbooks,learncoding,cplusplus,webassembly,fullstackdeveloper,webprogramming,cybersecuritynews,codinghelp,awscloud,cybersecurityjobs,API,datamining,bigdataanalytics,learnjava,php,devopsdays,sqlserver,golang,bitcoin,C_Programming,learn_csharp,sysadminjobs,Cplusplus,programmingjokes,artificial_intel,SQLServer,angular2,angularjs2,programmingmentor,learnperl,htmlcss,dockerhub,devopsloft,vuejs2,datascientists,learnhtml,codingbootcamps,linux4noobs,javaexamples,linuxquestions,javascript_tutorial,programmingprojects,CS_Questions,compsci,codinginterview,webdevelopment,programming_help,coding_language,cplusplusquestions,angularjs1_4,pythonforengineers,html,learnwebdev,codingexercises,programmingtools,codeprojects,pythonprogramming,javascriptgames,webdevelopers,datasciencecareer,learnjavascript,fullstackjs,mongodb,datascienceproject,hackingnews,androidapps,dotnetcore,learnprogramming,angularjs1_5,reactjsjobs,learnreactjs,cplusplus,technews,pythoncoding,learnpython,webdev,frontend,backend,cplusplus,coding,learnprogramming,devops,gamedev,codinghelp,softwaregore,javascript,web_design,webdev,datascience,computerscience,machinelearning,programming,technology,learnmachinelearning,learnprogramming,askprogramming,learnpython,python,javascript,css,html,cplusplus,java,ruby,perl,swift,golang,kotlin,dartlang,csharp,php,sql,rust,scala,shell,bash,powershell,typescript,rprogramming,angularjs,reactjs,vuejs,emberjs,svelte,flutterdev,androiddev,iosdev,webdev,frontend,backend,fullstack,devops,sysadmin,cloudcomputing,aws,azure,googlecloud,docker,kubernetes,linux,windows,macos,ios,android,web_security,networking,cybersecurity,privacy,cryptocurrency,blockchain,datascience,bigdata,machinelearning,deeplearning,artificial,robotics,iot,quantum,bioinformatics,physics,chemistry,biology,astronomy,mathematics,statistics,engineering"
+  
+  RedditToKafkaLambda1EventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Event rule to trigger RedditToKafkaLambda1 every 10 minutes"
+      ScheduleExpression: "rate(10 minutes)"
+      State: "ENABLED"
+      Targets:
+        - Arn: !GetAtt RedditToKafkaLambda1.Arn
+          Id: "RedditToKafkaLambda1Target"
+
+  LambdaPermissionForEventBridge:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt RedditToKafkaLambda1.Arn
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt RedditToKafkaLambda1EventRule.Arn
+
+  RedditKafkaConsumer1:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: RedditKafkaConsumer1
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.11
+      Timeout: 900 
+      Code:
+        S3Bucket: !Ref LambdaLayerS3Bucket
+        S3Key: 'consumer.zip'  
+      Role: "arn:aws:iam::590183658701:role/LabRole"
+      Environment:
+          Variables:
+            BOOTSTRAP_SERVER: "dory.srvs.cloudkafka.com:9094"
+            GROUP_ID: "cldsupij-consumer-group"
+            PASSWORD: "GN_A9Wb3NZG5vDmYIHaZbrtEobzqcE8U"
+            SASL_MECHANISM: "SCRAM-SHA-512"
+            TOPIC: "cldsupij-REDDIT_ETL_TOPIC"
+            USERNAME: "cldsupij"
+
+  RedditTrendAnalysis1:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: RedditTrendAnalysis1
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.11
+      Timeout: 20
+      Code:
+        S3Bucket: !Ref LambdaLayerS3Bucket
+        S3Key: 'trend.zip' 
+      Layers:
+        - 'arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python311:11'
+      Role: "arn:aws:iam::590183658701:role/LabRole"
+      Environment:
+        Variables:
+          STOP_WORDS: "i,me,my,myself,we,our,ours,ourselves,you,your,yours,yourself,yourselves,he,him,his,himself,she,her,hers,herself,it,its,itself,they,them,their,theirs,themselves,what,which,who,whom,this,that,these,those,am,is,are,was,were,be,been,being,have,has,had,having,do,does,did,doing,a,an,the,and,but,if,or,because,as,until,while,of,at,by,for,with,about,against,between,into,through,during,before,after,above,below,to,from,up,down,in,out,on,off,over,under,again,further,then,once,here,there,when,where,why,how,all,any,both,each,few,more,most,other,some,such,no,nor,not,only,own,same,so,than,too,very,s,t,can,will,just,don,should,now,also,well,would,us,need,get,go,many,much,say,says,said,should,let,even,like,see,etc,i,a,about,an,are,as,at,be,by,com,for,from,how,in,is,it,of,on,or,that,the,this,to,was,what,when,where,who,will,with,www"
+          STOP_WORDS_2: "a,able,about,above,abst,accordance,according,accordingly,across,act,actually,added,adj,affected,affecting,affects,after,afterwards,again,against,ah,all,almost,alone,along,already,also,although,always,am,among,amongst,an,and,announce,another,any,anybody,anyhow,anymore,anyone,anything,anyway,anyways,anywhere,apparently,approximately,are,aren,arent,arise,around,as,aside,ask,asking,at,auth,available,away,awfully,b,back,be,became,because,become,becomes,becoming,been,before,beforehand,begin,beginning,beginnings,begins,behind,being,believe,below,beside,besides,between,beyond,biol,both,brief,briefly,but,by,c,ca,came,can,cannot,can't,cause,causes,certain,certainly,co,com,come,comes,contain,containing,contains,could,couldnt"
+          STOP_WORDS_3: "d,date,did,didn,didn't,different,do,does,doesn,doesn't,doing,don,don't,done,down,downwards,due,during,e,each,ed,edu,effect,eg,eight,eighty,either,else,elsewhere,end,ending,enough,especially,et,et-al,etc,even,ever,every,everybody,everyone,everything,everywhere,ex,except,f,far,few,ff,fifth,first,five,fix,followed,following,follows,for,former,formerly,forth,found,four,from,using,new,data,using,one,two,three,four,five,six,seven,eight,nine,ten,use,help"
+          STOP_WORDS_4: "further,furthermore,g,gave,get,gets,getting,give,given,gives,giving,go,goes,gone,got,gotten,h,had,happens,hardly,has,hasn,hasnt,have,haven,haven't,having,he,hed,he'll,hes,her,here,hereafter,hereby,herein,heres,hereupon,hers,herself,hes,hi,hid,him,himself,his,hither,home,how,howbeit,however,hundred,i,id,ie,if,i'll,im,immediate,immediately,importance,important,in,inc,indeed,index,information,instead,into,invention,inward,is,isn,isnt,it,itd,it'll,its,itself,ive,j,just,k,keep,keeps,kept,kg,km,know,known,knows,l,largely,last,lately,later,latter,latterly,least,less,lest,let,lets,like,liked,likely,line,little,ll,look,looking,looks,ltd,m,made,mainly,make,makes,many,may,maybe,me,mean,means,meantime,meanwhile,merely,mg,might"
+
+  RedditDataCrawler:
+    Type: AWS::Glue::Crawler
+    Properties:
+      Role: "arn:aws:iam::590183658701:role/LabRole"
+      DatabaseName: "reddit-data1"
+      Targets:
+        S3Targets:
+          - Path: "s3://reddit-extracted-raw-data/reddit-data/"
+      SchemaChangePolicy:
+        UpdateBehavior: "UPDATE_IN_DATABASE"
+        DeleteBehavior: "DEPRECATE_IN_DATABASE"
+
+  RedditCsvMappingParquetJob:
+    Type: "AWS::Glue::Job"
+    Properties:
+      Role: "arn:aws:iam::590183658701:role/LabRole"
+      Command:
+        Name: "glueetl"
+        ScriptLocation: "s3://gluepythonscript/glue.py"
+      DefaultArguments:
+        "--job-language": "python"
+        "--job-bookmark-option": "job-bookmark-disable"
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      GlueVersion: "4.0"
+      MaxRetries: 0
+      Timeout: 2880
+      WorkerType: "G.1X"
+      NumberOfWorkers: 3
+      Tags: {}
+      Description: "Reddit CSV Mapping to Parquet Job"
+      Name: "reddit-csv-mapping-parquet1"
+
+  RedditWorkflow:
+    Type: AWS::Glue::Workflow
+    Properties:
+      Name: "RedditDataWorkflow"
+      Description: "Workflow for Reddit Data Pipeline"
+    
+  WorkflowTrigger:
+    Type: AWS::Glue::Trigger
+    Properties:
+      Name: "RedditWorkflowTrigger"
+      Type: "ON_DEMAND"
+      WorkflowName: !Ref RedditWorkflow
+      Actions:
+        - CrawlerName: !Ref RedditDataCrawler
+        - JobName: !Ref RedditCsvMappingParquetJob
+
+  RedditToKafkaApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: RedditToKafkaApi
+      Description: API Gateway for reddit-to-kafka resource
+      FailOnWarnings: true
+      EndpointConfiguration:
+        Types:
+          - EDGE
+
+  RedditToKafkaResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RedditToKafkaApi
+      ParentId: !GetAtt RedditToKafkaApi.RootResourceId
+      PathPart: reddit-to-kafka
+  
+  RedditToKafkaPostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RedditToKafkaApi
+      ResourceId: !Ref RedditToKafkaResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS
+        IntegrationHttpMethod: POST
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            ResponseTemplates:
+              application/json: ""
+        Uri: !Sub
+          - "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaArn}/invocations"
+          - LambdaArn: !GetAtt RedditToKafkaLambda1.Arn
+      MethodResponses:
+        - StatusCode: 200
+          ResponseModels:
+            application/json: !Ref RedditToKafkaApiModel
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+  
+  RedditToKafkaApiModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      ContentType: "application/json"
+      RestApiId: !Ref RedditToKafkaApi
+      Schema: {}
+
+  LambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref RedditToKafkaLambda1
+      Principal: apigateway.amazonaws.com
+
+
+  RedditToKafkaOptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RedditToKafkaApi
+      ResourceId: !Ref RedditToKafkaResource
+      HttpMethod: OPTIONS
+      AuthorizationType: NONE
+      Integration:
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            ResponseTemplates:
+              application/json: ""
+            StatusCode: "200"
+        Type: MOCK
+      MethodResponses:
+        - ResponseModels:
+            application/json: "Empty"
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: "200"
+
+
+  RedditToKafkaMethodDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn: RedditToKafkaPostMethod
+    Properties:
+      RestApiId: !Ref RedditToKafkaApi
+      Description: "Deployment for reddit-to-kafka resource"
+      StageName: "development"
+
+  RedditToKafkaApiStage:
+    Type: AWS::ApiGateway::Stage
+    DependsOn: RedditToKafkaMethodDeployment
+    Properties:
+      StageName: "developmentkd"
+      RestApiId: !Ref RedditToKafkaApi
+      DeploymentId: !Ref RedditToKafkaMethodDeployment
+
+  FlaskEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      KeyName: !Ref KeyNameParameter
+      ImageId: ami-051f8a213df8bc089
+      SecurityGroupIds:
+        - !Ref EC2InstanceSecurityGroup
+        - !Ref EC2InstanceSecurityGroupSSH
+        - !Ref EC2InstanceSecurityGroupHTTP
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          yum update -y
+          yum install -y python3 git
+          yum install -y python3-pip
+          pip3 install flask
+          cd /home/ec2-user/
+          git clone https://github.com/Kaushikdhola/RedditDataStreamFrontEnd.git
+          cd RedditDataStreamFrontEnd
+          export GENERATED_API_LIKE="https://${RedditToKafkaApi}.execute-api.${AWS::Region}.amazonaws.com/developmentkd/reddit-to-kafka/"
+          export FLASK_APP=app.py
+          export FLASK_ENV=development
+          nohup flask run --host=0.0.0.0 --port=5000 &
+      Tags:
+        - Key: Name
+          Value: FlaskEC2Instance
+
+  EC2InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for EC2 instance running Flask app
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5000
+          ToPort: 5000
+          CidrIp: 0.0.0.0/0
+
+  EC2InstanceSecurityGroupSSH:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for EC2 instance running Flask app for 22
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+          
+  EC2InstanceSecurityGroupHTTP:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for EC2 instance running Flask app for 80
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+Outputs:
+  RedditTrendAnalysis1Arn:
+    Description: "ARN of Reddit Trend Analysis Lambda Function"
+    Value: !GetAtt RedditTrendAnalysis1.Arn
+
+  RedditToKafkaLambda1Arn:
+    Description: "ARN of Reddit to Kafka ARN Lambda Function"
+    Value: !GetAtt RedditToKafkaLambda1.Arn
+  
+  RedditToKafkaLambda1:
+    Value: !Ref RedditToKafkaLambda1
+    Description: "Lambda function for Reddit to Kafka"
+  
+  RedditTrendAnalysis1:
+    Value: !Ref RedditTrendAnalysis1
+    Description: "Lambda function for Reddit Trend Analysis"
+
+  RedditToKafkaApiId:
+    Value: !Ref RedditToKafkaApi
+    Description: "API Gateway ID for reddit-to-kafka resource"
+
+  RedditToKafkaResource:
+    Value: !Ref RedditToKafkaResource
+    Description: "API Gateway resource for reddit-to-kafka"
+
+  RedditToKafkaPostMethod:
+    Value: !Ref RedditToKafkaPostMethod
+    Description: "POST method for reddit-to-kafka"
+
+  RedditToKafkaApiInvokeURL:
+    Value: !Sub "https://${RedditToKafkaApi}.execute-api.${AWS::Region}.amazonaws.com/developmentkd/reddit-to-kafka/"
+    Description: "Invoke URL for the API Gateway endpoint"
+
+  FlaskEC2InstancePublicIP:
+    Description: Public IP address of the Flask EC2 instance
+    Value: !GetAtt FlaskEC2Instance.PublicIp
