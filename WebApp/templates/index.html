@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reddit Data Stream Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"> 
+<style>
+    body, html {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column; /* Align items vertically */
+        overflow: hidden;
+        color: white; /* Set default text color to white */
+        background-color: black; /* Ensure background is black for contrast */
+    }
+    body::before {
+        content: "";
+        position: fixed;
+        top: -50%; 
+        left: -50%;
+        width: 200%; 
+        height: 200%;
+        background-color: #000; 
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: 0 0;
+        animation: moveBackground 30s linear infinite;
+        z-index: -1;
+    }
+    @keyframes moveBackground {
+        0% {background-position: 0% 0%;}
+        50% {background-position: 100% 100%;}
+        100% {background-position: 0% 0%;}
+    }
+    .button {
+        background-color: #fff;
+        border: none;
+        color: black;
+        padding: 20px 40px; /* Increased padding for a larger button */
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 20px; /* Larger font size */
+        font-family: 'Roboto', sans-serif; /* Roboto font */
+        cursor: pointer;
+        border-radius: 0;
+        transition: all 0.3s ease;
+    }
+    .button:hover {
+        background-color: #f2f2f2;
+        color: #333;
+    }
+    .status-message {
+        margin-top: 20px; /* Space between the button and the message */
+        color: white; /* Text color */
+        font-size: xx-large;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+<a href="#" class="button" id="dataButton">Streams Some Live Data!</a>
+
+<div id="statusMessage" class="status-message"></div>
+
+<script>
+document.getElementById('dataButton').onclick = function() {
+    var statusMessage = document.getElementById('statusMessage');
+    var messages = [
+        "Getting some real-time data from Reddit...",
+        "Transforming your data...",
+        "Converting data to readable format...",
+        "Almost there, processing the pre-processed data...",
+        "Doing trend analysis with your data...",
+        "It's done!"
+    ];
+
+    var index = 0;
+    var intervalId = setInterval(function() {
+        if (index < messages.length) {
+            statusMessage.textContent = messages[index++];
+        } else {
+            clearInterval(intervalId);
+            statusMessage.textContent = "Process completed. Click to stream again!";
+            document.getElementById('dataButton').disabled = false; 
+        }
+    }, 60000);
+    statusMessage.textContent = messages[index++];
+    this.disabled = true;
+
+    // Make a POST request to the Flask backend
+    fetch("/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({})  // Include any data needed in the request
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => console.log(data))
+    .catch(error => console.error('There was a problem with the fetch operation:', error));
+};
+</script>
+
+</body>
+</html>
