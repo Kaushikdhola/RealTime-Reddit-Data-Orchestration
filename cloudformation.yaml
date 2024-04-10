@@ -26,12 +26,12 @@ Resources:
       Role: "arn:aws:iam::590183658701:role/LabRole"
       Environment:
           Variables:
-            BOOTSTRAP_SERVERS: "dory.srvs.cloudkafka.com:9094"
-            CLOUDKARAFKA_PASSWORD: "GN_A9Wb3NZG5vDmYIHaZbrtEobzqcE8U"
-            CLOUDKARAFKA_USERNAME: "cldsupij"
+            BOOTSTRAP_SERVERS: "YOUR_CLOUDKARAFKA_BOOTSTRAP_SERVER:PORT_NUMBER"
+            CLOUDKARAFKA_PASSWORD: "YOUR_CLOUDKARAFKA_PASSWORD"
+            CLOUDKARAFKA_USERNAME: "YOUR_CLOUDKARAFKA_USERNAME"
             KAFKA_TOPIC: "cldsupij-REDDIT_ETL_TOPIC"
-            REDDIT_CLIENT_ID: "9Y8x384xPzcaFWzDS0SJjA"
-            REDDIT_CLIENT_SECRET: "IZ0NK6r8E7-87GGgYR50jZSEfPFApA"
+            REDDIT_CLIENT_ID: "YOUR_REDDIT_CLIENT_ID"
+            REDDIT_CLIENT_SECRET: "YOUR_REDDIT_CLIENT_SECRET"
             SUBREDDITS: "technology,datascience,dataengineering,softwareengineering,innovation,computerscience,programming,webdev,sysadmin,learnprogramming,cybersecurity,artificial,DevOps,BigData,opensource,gamedev,hacking,technews,networking,linux,Python,Java,javascript,reactjs,angularjs,node,learnpython,learnjavascript,learnjava,php,cpp,rust,machinelearning,dataisbeautiful,datasciencejobs,ArtificialInteligence,robotics,aws,docker,kubernetes,coding,programminghumor,technologynews,frontend,backend,softwaretesting,learnprogrammingjobs,programmingchallenges,androiddev,iOSProgramming,learnmachinelearning,web_design,crypto,cloudcomputing,azure,dataviz,gameprogramming,CompTIA,devopsish,CS50,sql,programmingtools,APIs,productmanagement,devops,UI_programming,devopsengineers,blockchain,fullstack,webhosting,SEO,webdevtutorials,data,algorithms,learnruby,learnr,rust_programming,devopsjobs,webdevbuddies,web_designer,learnvue,javascriptframeworks,techsupport,angular,vuejs,laravel,dotnet,machinelearningalgorithms,MLQuestions,softwaredevelopment,devops_salaries,opensourcecoding,opensourceprojects,productdesign,devopsjobs,wordpress,webdevsupport,webdevelopers,devopschat,codingbootcamp,programmerreactions,codeprojects,backenddev,dataprivacy,datavisualization,learnsql,programmingmemes,ruby,pythoncoding,csbooks,learncoding,cplusplus,webassembly,fullstackdeveloper,webprogramming,cybersecuritynews,codinghelp,awscloud,cybersecurityjobs,API,datamining,bigdataanalytics,learnjava,php,devopsdays,sqlserver,golang,bitcoin,C_Programming,learn_csharp,sysadminjobs,Cplusplus,programmingjokes,artificial_intel,SQLServer,angular2,angularjs2,programmingmentor,learnperl,htmlcss,dockerhub,devopsloft,vuejs2,datascientists,learnhtml,codingbootcamps,linux4noobs,javaexamples,linuxquestions,javascript_tutorial,programmingprojects,CS_Questions,compsci,codinginterview,webdevelopment,programming_help,coding_language,cplusplusquestions,angularjs1_4,pythonforengineers,html,learnwebdev,codingexercises,programmingtools,codeprojects,pythonprogramming,javascriptgames,webdevelopers,datasciencecareer,learnjavascript,fullstackjs,mongodb,datascienceproject,hackingnews,androidapps,dotnetcore,learnprogramming,angularjs1_5,reactjsjobs,learnreactjs,cplusplus,technews,pythoncoding,learnpython,webdev,frontend,backend,cplusplus,coding,learnprogramming,devops,gamedev,codinghelp,softwaregore,javascript,web_design,webdev,datascience,computerscience,machinelearning,programming,technology,learnmachinelearning,learnprogramming,askprogramming,learnpython,python,javascript,css,html,cplusplus,java,ruby,perl,swift,golang,kotlin,dartlang,csharp,php,sql,rust,scala,shell,bash,powershell,typescript,rprogramming,angularjs,reactjs,vuejs,emberjs,svelte,flutterdev,androiddev,iosdev,webdev,frontend,backend,fullstack,devops,sysadmin,cloudcomputing,aws,azure,googlecloud,docker,kubernetes,linux,windows,macos,ios,android,web_security,networking,cybersecurity,privacy,cryptocurrency,blockchain,datascience,bigdata,machinelearning,deeplearning,artificial,robotics,iot,quantum,bioinformatics,physics,chemistry,biology,astronomy,mathematics,statistics,engineering"
   
   RedditToKafkaLambda1EventRule:
@@ -65,12 +65,12 @@ Resources:
       Role: "arn:aws:iam::590183658701:role/LabRole"
       Environment:
           Variables:
-            BOOTSTRAP_SERVER: "dory.srvs.cloudkafka.com:9094"
-            GROUP_ID: "cldsupij-consumer-group"
-            PASSWORD: "GN_A9Wb3NZG5vDmYIHaZbrtEobzqcE8U"
+            BOOTSTRAP_SERVER: "YOUR_CLOUDKARAFKA_BOOTSTRAP_SERVER:PORT_NUMBER"
+            GROUP_ID: "consumer-group"
+            PASSWORD: "YOUR_CLOUDKARAFKA_PASSWORD"
             SASL_MECHANISM: "SCRAM-SHA-512"
-            TOPIC: "cldsupij-REDDIT_ETL_TOPIC"
-            USERNAME: "cldsupij"
+            TOPIC: "REDDIT_ETL_TOPIC"
+            USERNAME: "YOUR_CLOUDKARAFKA_USERNAME"
 
   RedditTrendAnalysis1:
     Type: AWS::Lambda::Function
