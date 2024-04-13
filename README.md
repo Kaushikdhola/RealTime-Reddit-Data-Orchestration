@@ -85,6 +85,12 @@ This project demonstrates a real-time data pipeline for extracting data from Red
  - Amazon S3
  - API Gateway
 
+## Project Details
+
+For a detailed overview and step-by-step guide, please refer to the Medium article:
+
+[Unleashing Real-time Insights: Building a Dynamic Reddit Data Pipeline with Kafka on AWS](https://medium.com/@kaushikdhola02/unleashing-real-time-insights-building-a-dynamic-reddit-data-pipeline-with-kafka-on-aws-c9d9ec73152c)
+
 ## Credits 
  Author: [Kaushik Chanabhai Dhola](https://github.com/Kaushikdhola)
 
