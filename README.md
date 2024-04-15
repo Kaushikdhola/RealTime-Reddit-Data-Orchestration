@@ -87,7 +87,7 @@ This project demonstrates a real-time data pipeline for extracting data from Red
 
 ## Project Details
 
-For a detailed overview and step-by-step guide, please refer to my Medium article:
+For a detailed overview and step-by-step guide for Data Streaming and ETL orchetration, please refer to my Medium article:
 
 [Unleashing Real-time Insights: Building a Dynamic Reddit Data Pipeline with Kafka on AWS](https://medium.com/@kaushikdhola02/unleashing-real-time-insights-building-a-dynamic-reddit-data-pipeline-with-kafka-on-aws-c9d9ec73152c)
 
